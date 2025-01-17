@@ -4,7 +4,7 @@ import { fetchTodos } from "../api/data-api";
 export const useTodoQuery = (userId:string | null)  => {
   return useQuery({
     queryFn: () => fetchTodos(userId),
-    queryKey: ['user', 'todos', userId ?? ""],
+    queryKey: ['user', 'todo', userId ?? ""],
     enabled: !!userId
   })
 }
