@@ -1,0 +1,4 @@
+{
+  "/todo/user/:userId": "/todo?userId=:userId",
+  "/todo/user/:userId/:postId": "/todo?userId=:userId&postId=:postId"
+}
