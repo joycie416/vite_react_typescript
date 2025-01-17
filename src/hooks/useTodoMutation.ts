@@ -1,17 +1,19 @@
-import { QueryClient, useMutation } from "@tanstack/react-query";
-import { addTodo } from "../api/data-api";
+import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query";
+import { addTodo, deleteTodo, editTodo } from "../api/data-api";
 import { Todo } from "../types/todo";
 
-export const useAddTodoMutation = (userId:string, queryClient: QueryClient) => {
+export const useAddTodoMutation = (userId:string | null) => {
+  const queryClient = useQueryClient();
+  
   return useMutation({
-    mutationFn: ({todo}:{todo:Todo}) => addTodo(todo),
+    mutationFn: ({todo}:{todo:Omit<Todo, 'id'>}) => addTodo(todo),
 
     //낙관적 업데이트
-    onMutate: async ({todo}:{todo:Todo}) => {
+    onMutate: async ({todo}:{todo:Omit<Todo, 'id'>}) => {
       await queryClient.cancelQueries({
         queryKey: ["user", "todo", userId],
       });
-      const prevTodos = queryClient.getQueryData<(Todo & { id: string })[]>([
+      const prevTodos = queryClient.getQueryData<Todo[]>([
         "user",
         "todo",
         todo.userId,
@@ -19,7 +21,7 @@ export const useAddTodoMutation = (userId:string, queryClient: QueryClient) => {
 
       const newTodo = { ...todo, id: crypto.randomUUID().slice(0, 8) };
 
-      queryClient.setQueryData<(Todo & { id: string })[]>(
+      queryClient.setQueryData<Todo[]>(
         ["user", "todo", userId],
         (prev) => [...(prev ?? []), newTodo]
       );
@@ -28,15 +30,15 @@ export const useAddTodoMutation = (userId:string, queryClient: QueryClient) => {
     },
     onError: (_, __, context) => {
       if (context?.prevTodos) {
-        queryClient.setQueryData<(Todo & { id: string })[]>(
-          ["user", "todo", userId],
+        queryClient.setQueryData<Todo[]>(
+          ["user", "todo", userId ?? ""],
           context.prevTodos
         );
       }
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ["user", "todo", userId],
+        queryKey: ["user", "todo", userId ?? ""],
       });
     },
   });
@@ -44,36 +46,79 @@ export const useAddTodoMutation = (userId:string, queryClient: QueryClient) => {
 
 
 
-// export const useDeleteTodoMutation = (id: string, queryClient: QueryClient) => {
-//   return useMutation({
-//     mutationFn: ({ id }: { id: string }) => cancelLike(id),
+export const useDeleteTodoMutation = (userId: string | null) => {
+  const queryClient = useQueryClient();
 
-//     // 낙관적 업데이트
-//     onMutate: async ({ id }: { id: string }) => {
-//       await queryClient.cancelQueries({ queryKey: ["user", "like", userId ?? ""] });
-//       const prevLikes = queryClient.getQueryData<Like[]>(["user", "like", userId ?? ""]);
+  return useMutation({
+    mutationFn: ({ id }: { id: string }) => deleteTodo(id),
 
-//       queryClient.setQueryData<Like[]>(["user", "like", userId ?? ""], (prev) =>
-//         prev?.filter((like) => like.id !== id)
-//       );
+    // 낙관적 업데이트
+    onMutate: async ({ id }: { id: string }) => {
+      await queryClient.cancelQueries({ queryKey: ["user", "todo", userId ?? ""] });
+      const prevTodos = queryClient.getQueryData<Todo[]>(["user", "todo", userId ?? ""]);
 
-//       // context에 이전 데이터 넣어둠
-//       return { prevLikes };
-//     },
+      queryClient.setQueryData<Todo[]>(["user", "todo", userId], (prev) =>
+        prev?.filter((todo) => todo.id !== id)
+      );
 
-//     // 에러가 발생하면 이전 데이터로 변경
-//     onError: (_, __, context) => {
-//       if (context?.prevLikes) {
-//         queryClient.setQueryData<Like[]>(["user", "like", userId ?? ""], context.prevLikes);
-//       }
-//     },
+      // context에 이전 데이터 넣어둠
+      return { prevTodos };
+    },
 
-//     // 성공하면 invalidate
-//     // onSuccess와 달리 성공해도, 실패해도 모두 실행
-//     onSettled: () => {
-//       queryClient.invalidateQueries({
-//         queryKey: ["user", "like", userId ?? ""]
-//       });
-//     }
-//   });
-// };
+    // 에러가 발생하면 이전 데이터로 변경
+    onError: (_, __, context) => {
+      if (context?.prevTodos) {
+        queryClient.setQueryData<Todo[]>(["user", "todo", userId], context.prevTodos);
+      }
+    },
+
+    // 성공하면 invalidate
+    // onSuccess와 달리 성공해도, 실패해도 모두 실행
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["user", "todo", userId]
+      });
+    }
+  });
+};
+
+export const useEditTodoMutation = (userId: string | null) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, isDone }: { id: string, isDone: boolean }) => editTodo(id, isDone),
+
+    // 낙관적 업데이트
+    onMutate: async ({ id, isDone }: { id: string, isDone: boolean }) => {
+      await queryClient.cancelQueries({ queryKey: ["user", "todo", userId ?? ""] });
+      const prevTodos = queryClient.getQueryData<Todo[]>(["user", "todo", userId ?? ""]);
+
+      queryClient.setQueryData<Todo[]>(["user", "todo", userId], (prev) =>
+        prev?.map((todo) => {
+          if (todo.id === id) {
+            return {...todo, isDone: !isDone}
+          }
+          return todo
+        })
+      );
+
+      // context에 이전 데이터 넣어둠
+      return { prevTodos };
+    },
+
+    // 에러가 발생하면 이전 데이터로 변경
+    onError: (_, __, context) => {
+      if (context?.prevTodos) {
+        queryClient.setQueryData<Todo[]>(["user", "todo", userId], context.prevTodos);
+      }
+    },
+
+    // 성공하면 invalidate
+    // onSuccess와 달리 성공해도, 실패해도 모두 실행
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["user", "todo", userId]
+      });
+    }
+  });
+};

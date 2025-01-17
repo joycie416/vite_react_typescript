@@ -1,13 +1,15 @@
 import { useRef } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { useAddTodoMutation } from "../../hooks/useTodoMutation";
+import { useTodoQuery } from "../../hooks/useTodoQuery";
+import TodoCard from "./TodoCard";
 
 const HomePage = () => {
-  const queryClient = useQueryClient();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { mutate: addTodo } = useAddTodoMutation("1", queryClient);
+  const {data: Todos, isLoading} = useTodoQuery('1');
+
+  const { mutate: addTodo } = useAddTodoMutation("1");
 
   const onClick = () => {
     if (!inputRef.current?.value) {
@@ -20,6 +22,8 @@ const HomePage = () => {
     });
     inputRef.current.value = "";
   };
+  
+
 
   return (
     <div className="w-full h-screen flex flex-col">
@@ -28,7 +32,9 @@ const HomePage = () => {
         <input type="text" className="border" ref={inputRef} />
         <button onClick={onClick}>버튼</button>
       </div>
-      <ul>{}</ul>
+      <ul>{Todos?.map(todo => (<li key={todo.id}>
+        <TodoCard todo={todo} user={'1'}/>
+      </li>))}</ul>
     </div>
   );
 };
