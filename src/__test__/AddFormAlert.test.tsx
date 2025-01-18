@@ -5,7 +5,6 @@ import { useAddTodoMutation } from "../hooks/useTodoMutation";
 // Mocking alert function
 const mockAlert = jest.spyOn(window, "alert").mockImplementation(() => {});
 
-
 // Mock useAddTodoMutation
 jest.mock("../hooks/useTodoMutation", () => ({
   useAddTodoMutation: jest.fn(),
