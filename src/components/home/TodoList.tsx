@@ -12,9 +12,9 @@ const TodoList = () => {
   }
 
   return (
-    <div className="flex">
-      <div>
-        <p>해야 할 일</p>
+    <div className="flex justify-around">
+      <div className="w-full max-w-[250px] flex flex-col">
+        <p className="mx-auto mb-10">해야 할 일</p>
         <ul>
           {todoList?.map((todo) => (
             <li key={todo.id}>
@@ -23,8 +23,8 @@ const TodoList = () => {
           ))}
         </ul>
       </div>
-      <div>
-        <p>끝난 일</p>
+      <div className="w-full max-w-[250px] flex flex-col">
+        <p className="mx-auto mb-10">끝난 일</p>
         <ul>
           {doneList?.map((todo) => (
             <li key={todo.id}>

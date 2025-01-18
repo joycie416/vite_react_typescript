@@ -18,13 +18,15 @@ const AddForm = () => {
       userId: "test00123",
     });
     inputRef.current.value = "";
-  };  
+  };
 
   return (
-    <div>
+    <div className="flex flex-col items-center mb-20">
       <p>할일 등록하기</p>
-      <input type="text" className="border" ref={inputRef} />
-      <button onClick={onAdd}>Add</button>
+      <form >
+        <input type="text" className="border" ref={inputRef} />
+        <button type="button" onClick={onAdd}>Add</button>
+      </form>
     </div>
   );
 };

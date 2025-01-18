@@ -17,7 +17,7 @@ const TodoCard = ({user, todo}: {user:string, todo: Todo}) => {
   return (
     <div>
       <p>{todo.content}</p>
-      <div>
+      <div className="flex justify-end">
         <button onClick={onEdit} >{todo.isDone? '취소': '완료'}</button>
         <button onClick={onDelete}>삭제</button>
       </div>
