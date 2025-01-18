@@ -24,7 +24,7 @@ const AddForm = () => {
     <div className="flex flex-col items-center mb-20">
       <p>할일 등록하기</p>
       <form >
-        <input type="text" className="border" ref={inputRef} />
+        <input type="text" className="border" placeholder="할일 입력하기" ref={inputRef} />
         <button type="button" onClick={onAdd}>Add</button>
       </form>
     </div>
