@@ -8,20 +8,29 @@ import { useQueryClient } from "@tanstack/react-query";
 const NavBar = () => {
   const queryClient = useQueryClient();
   const { data: user, isLoading } = getUserQuery();
-  const { signOut: StoreSignOut } = useAuthStore((state) => state);
+  const {
+    user: storeUser,
+    signIn,
+    signOut: storeSignOut,
+  } = useAuthStore((state) => state);
+  if (user) {
+    signIn({ id: user.id, nickname: user.nickname });
+  }
 
   supabase.auth.onAuthStateChange((event) => {
     if (event === "USER_UPDATED") {
       queryClient.invalidateQueries({ queryKey: ["user", "info"] });
-    } else {
+    }
+    if (event ===  "SIGNED_OUT") {
       queryClient.invalidateQueries({ queryKey: ["user"] });
     }
   });
 
-  const onSignOut = async () => {
+  const handleSignOut = async () => {
     try {
       await signOut();
-      StoreSignOut();
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      storeSignOut();
     } catch (error) {
       console.error(error);
       alert("로그아웃 실패");
@@ -34,14 +43,14 @@ const NavBar = () => {
         Home
       </Link>
       <ul>
-        {(!user || isLoading) && (
+        {(!storeUser || isLoading) && (
           <li>
             <Link to="/sign-in" className="text-black hover:text-black">
               로그인
             </Link>
           </li>
         )}
-        {user && (
+        {storeUser && (
           <>
             <li>
               <Link to="/mypage" className="text-black hover:text-black">
@@ -49,7 +58,7 @@ const NavBar = () => {
               </Link>
             </li>
             <li>
-              <button onClick={onSignOut}>로그아웃</button>
+              <button onClick={handleSignOut}>로그아웃</button>
             </li>
           </>
         )}

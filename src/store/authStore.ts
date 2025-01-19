@@ -11,10 +11,10 @@ type AuthData = {
 
 type AuthAction = {
   signIn: ({
-    userId,
+    id,
     nickname,
   }: {
-    userId: string;
+    id: string;
     nickname: string;
   }) => Promise<void>;
   signOut: () => void;
@@ -38,17 +38,17 @@ const useAuthStore = create(
       //   return;
       // },
       signIn: async ({
-        userId,
+        id,
         nickname,
       }: {
-        userId: string;
+        id: string;
         nickname: string;
       }) => {
         const currentData = get();
         if (currentData?.user?.nickname === nickname) {
           return;
         }
-        set({ user: { id: userId, nickname } });
+        set({ user: { id, nickname } });
         return;
       },
       signOut: () => {

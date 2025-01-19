@@ -11,7 +11,7 @@ export const signUp = async (userData: SignUpData): Promise<User|null> => {
   });
   if (error) {
     console.log(error)
-    throw new Error("회원가입에 실패하였습니다.");
+    throw new Error(error.message);
   }
   return user;
 };
@@ -20,7 +20,7 @@ export const signIn = async (userData: SignInData): Promise<User|null> => {
   const { data: {user}, error } = await supabase.auth.signInWithPassword(userData);
   if (error) {
     console.log(error)
-    throw new Error("로그인에 실패하였습니다.");
+    throw new Error(error.message);
   }
   return user;
 };
@@ -28,7 +28,7 @@ export const signIn = async (userData: SignInData): Promise<User|null> => {
 export const signOut = async () => {
   const { error } = await supabase.auth.signOut();
   if (error) {
-    throw new Error("로그아웃에 실패하였습니다.");
+    throw new Error(error.message);
   }
 };
 
@@ -38,18 +38,18 @@ export const getUser = async () => {
     error,
   } = await supabase.auth.getUser();
   if (error || !user) {
-    return null
+    return null;
   }
 
 
-  return { userId: user.id, nickname: user.user_metadata.nickname as string };
+  return { id: user.id, nickname: user.user_metadata.nickname as string };
 };
 
 export const updateUser = async ({
-  userId,
+  id,
   nickname,
 }: {
-  userId: string;
+  id: string;
   nickname: string;
 }) => {
   const { error: authError } = await supabase.auth.updateUser({
@@ -58,7 +58,7 @@ export const updateUser = async ({
   const { error: tableError } = await supabase
     .from("users")
     .update({ nickname })
-    .eq("user_id", userId);
+    .eq("user_id", id);
   if (authError || tableError) {
     throw new Error("닉네임 수정에 실패하였습니다.");
   }

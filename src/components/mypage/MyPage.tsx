@@ -20,8 +20,6 @@ const MyPage = () => {
   const { user, editUser } = useAuthStore((state) => state);
   const { mutate: updateUser } = useUpdateUserMutation();
 
-  console.log("user :", user);
-
   const {
     register,
     handleSubmit,
@@ -34,12 +32,11 @@ const MyPage = () => {
   });
 
   const onEditUser = (data: { nickname: string }) => {
-    if (data.nickname && data.nickname.trim() !== user?.nickname) {
-      const nickname = data.nickname.trim();
-      updateUser({ userId: user?.id ?? "", nickname });
-      editUser(nickname);
+    console.log('edit data:', data);
+    if (data.nickname && data.nickname !== user?.nickname) {
+      updateUser({ id: user?.id ?? "", nickname: data.nickname });
+      editUser(data.nickname);
       reset({ nickname: "" });
-      alert("닉네임이 수정되었습니다.");
     }
   };
 

@@ -1,23 +1,24 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateUser } from "../api/supabase-auth-api";
-import { User } from "@supabase/supabase-js";
+
+type User = { id: string; nickname: string }
 
 export const useUpdateUserMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { userId: string; nickname: string }) =>
+    mutationFn: (data: User) =>
       updateUser(data),
 
     // 낙관적 업데이트
-    onMutate: async (data: { userId: string; nickname: string }) => {
+    onMutate: async (data: User) => {
       await queryClient.cancelQueries({ queryKey: ["user", "info"] });
       const prevData = queryClient.getQueryData<User>(["user", "info"]);
 
       queryClient.setQueryData<User>(["user", "info"], (prev) => {
         if (!!prev) {
           const updatedUser = { ...prev };
-          updatedUser.user_metadata.nickname = data.nickname;
+          updatedUser.nickname = data.nickname;
           return updatedUser;
         }
         return;

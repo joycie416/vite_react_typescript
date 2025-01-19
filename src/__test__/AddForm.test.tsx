@@ -36,7 +36,6 @@ describe("AddForm Component", () => {
     // addTodo 호출 확인
     expect(mockAddTodo).toHaveBeenCalledWith({
       content: "오늘의 할일",
-      isDone: false,
       userId: "test00123",
     });
   });

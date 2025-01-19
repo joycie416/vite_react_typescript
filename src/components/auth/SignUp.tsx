@@ -43,8 +43,7 @@ const SignUp = () => {
   const onSubmit = async (data: SignUpForm) => {
     try {
       const user = await signUp(data);
-      console.log("회원가입 성공");
-      signIn({userId: user?.id ?? "", nickname: data.nickname})
+      signIn({id: user?.id ?? "", nickname: data.nickname})
       navigate("/");
     } catch (error) {
       console.error(error);

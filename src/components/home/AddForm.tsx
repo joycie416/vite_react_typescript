@@ -20,6 +20,7 @@ const AddForm = () => {
         navigate("/sign-in");
         return;
       }
+      return;
     }
 
     if (!inputRef.current?.value.trim()) {

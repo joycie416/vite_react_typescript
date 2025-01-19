@@ -37,9 +37,8 @@ const SignIn = () => {
   const onSubmit = async (data: SignInForm) => {
     try {
       const user = await signIn(data);
-      console.log("로그인 성공");
       StoreSignIn({
-        userId: user?.id ?? "",
+        id: user?.id ?? "",
         nickname: user?.user_metadata.nickname ?? "",
       });
       navigate("/");
