@@ -1,11 +1,13 @@
 import { useTodoQuery } from "../../hooks/useTodoQuery";
+import useAuthStore from "../../store/authStore";
 import TodoCard from "./TodoCard";
 
 const TodoList = () => {
-  const { data: Todos, isLoading } = useTodoQuery("test00123");
+  const {user} = useAuthStore(state => state)
+  const { data: Todos, isLoading } = useTodoQuery(user?.id ?? null);
 
-  const todoList = Todos?.filter((todo) => !todo.isDone) ?? [];
-  const doneList = Todos?.filter((todo) => todo.isDone) ?? [];
+  const todoList = Todos?.filter((todo) => !todo.is_done) ?? [];
+  const doneList = Todos?.filter((todo) => todo.is_done) ?? [];
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -18,7 +20,7 @@ const TodoList = () => {
         <ul>
           {todoList?.map((todo) => (
             <li key={todo.id}>
-              <TodoCard todo={todo} user={"test00123"} />
+              <TodoCard todo={todo} user={user?.id ?? ""} />
             </li>
           ))}
         </ul>
@@ -28,7 +30,7 @@ const TodoList = () => {
         <ul>
           {doneList?.map((todo) => (
             <li key={todo.id}>
-              <TodoCard todo={todo} user={"test00123"} />
+              <TodoCard todo={todo} user={user?.id ?? ""} />
             </li>
           ))}
         </ul>

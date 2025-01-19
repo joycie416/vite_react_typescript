@@ -1,5 +1,7 @@
+import { Tables } from "../../../database.types"
 import { useDeleteTodoMutation, useEditTodoMutation } from "../../hooks/useTodoMutation"
-import { Todo } from "../../types/todo"
+// import { Todo } from "../../types/todo"
+type Todo = Tables<'todos'>
 
 const TodoCard = ({user, todo}: {user:string, todo: Todo}) => {
 
@@ -7,7 +9,7 @@ const TodoCard = ({user, todo}: {user:string, todo: Todo}) => {
   const {mutate:deleteTodo} = useDeleteTodoMutation(user)
   
   const onEdit = () => {
-    editTodo({id:todo.id, isDone:todo.isDone})
+    editTodo({id:todo.id, isDone:todo.is_done})
   }
 
   const onDelete = () => {
@@ -18,7 +20,7 @@ const TodoCard = ({user, todo}: {user:string, todo: Todo}) => {
     <div>
       <p>{todo.content}</p>
       <div className="flex justify-end">
-        <button onClick={onEdit} >{todo.isDone? '취소': '완료'}</button>
+        <button onClick={onEdit} >{todo.is_done? '취소': '완료'}</button>
         <button onClick={onDelete}>삭제</button>
       </div>
     </div>
