@@ -18,7 +18,7 @@ type AuthAction = {
     nickname: string;
   }) => Promise<void>;
   signOut: () => void;
-  editUser: (nickname:string) => void;
+  editUser: (nickname: string) => void;
 };
 
 type AuthStore = AuthData & AuthAction;
@@ -54,15 +54,14 @@ const useAuthStore = create(
       signOut: () => {
         set({ user: null });
       },
-      editUser: async (nickname: string) => {
+      editUser: (nickname: string) => {
         const currentData = get();
         if (currentData.user?.nickname === nickname) {
           return;
         }
-        set({ user: {id: currentData.user?.id ?? '', nickname } });
+        set({ user: { id: currentData.user?.id ?? "", nickname } });
         return;
-
-      }
+      },
     }),
     {
       name: "userStorage",
