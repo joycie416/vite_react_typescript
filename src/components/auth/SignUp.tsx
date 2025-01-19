@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signUp } from "../../api/auth-api";
+import { signUp } from "../../api/supabase-auth-api";
 
 const schema = z.object({
   nickname: z
@@ -10,11 +10,9 @@ const schema = z.object({
     .regex(/^[a-zA-Z0-9]+$/, "영문, 숫자만 사용할 수 있습니다.")
     .min(2, { message: "2자 이상 입력해주세요." })
     .max(15, { message: "최대 15자 입력 가능합니다." }),
-  id: z
+  email: z
     .string()
-    .regex(/^[a-zA-Z0-9]+$/, "영문, 숫자만 사용할 수 있습니다.")
-    .min(2, { message: "2자 이상 입력해주세요." })
-    .max(15, { message: "최대 15자 입력 가능합니다." }),
+    .email({ message: "이메일 형식으로 입력해주세요" }),
   password: z
     .string()
     .regex(/^[a-zA-Z0-9!@#$%^]+$/, "영문, 숫자, !@#$%^만 사용할 수 있습니다.")
@@ -23,7 +21,7 @@ const schema = z.object({
 
 const defaultValues = {
   nickname: "",
-  id: "",
+  email: "",
   password: "",
 };
 
@@ -41,10 +39,12 @@ const SignUp = () => {
   });
 
   const onSubmit = async (data: SignUpForm) => {
-    console.log("회원가입:", data);
-
-    const response = await signUp(data);
-    console.log("응답:", response);
+    try {
+      await signUp(data);
+      console.log('회원가입 성공')
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -65,14 +65,14 @@ const SignUp = () => {
             {errors.nickname && <p>{errors.nickname.message}</p>}
           </div>
           <div className="flex flex-col">
-            <label>아이디</label>
+            <label>이메일</label>
             <input
-              {...register("id")}
-              type="text"
-              placeholder="아이디"
+              {...register("email")}
+              type="email"
+              placeholder="이메일"
               className="py-2 rounded-md"
             />
-            {errors.id && <p>{errors.id.message}</p>}
+            {errors.email && <p>{errors.email.message}</p>}
           </div>
           <div className="flex flex-col">
             <label>비밀번호</label>

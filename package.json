@@ -9,12 +9,14 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "json-server --watch db.json --port 5000",
-    "test": "jest"
+    "test": "jest",
+    "gen": "supabase gen types typescript --project-id ccfbernajnojtsmvnqqn > database.types.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
     "@sentry/react": "^8.50.0",
     "@sentry/vite-plugin": "^3.0.0",
+    "@supabase/supabase-js": "^2.47.16",
     "@tanstack/react-query": "^5.64.1",
     "axios": "^1.7.9",
     "react": "^18.3.1",
