@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signUp } from "../../api/supabase-auth-api";
+import useAuthStore from "../../store/authStore";
 
 const schema = z.object({
   nickname: z
@@ -10,9 +11,7 @@ const schema = z.object({
     .regex(/^[a-zA-Z0-9]+$/, "영문, 숫자만 사용할 수 있습니다.")
     .min(2, { message: "2자 이상 입력해주세요." })
     .max(15, { message: "최대 15자 입력 가능합니다." }),
-  email: z
-    .string()
-    .email({ message: "이메일 형식으로 입력해주세요" }),
+  email: z.string().email({ message: "이메일 형식으로 입력해주세요" }),
   password: z
     .string()
     .regex(/^[a-zA-Z0-9!@#$%^]+$/, "영문, 숫자, !@#$%^만 사용할 수 있습니다.")
@@ -28,6 +27,9 @@ const defaultValues = {
 type SignUpForm = z.infer<typeof schema>;
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const {signIn} = useAuthStore(state => state);
+
   const {
     register,
     handleSubmit,
@@ -40,10 +42,13 @@ const SignUp = () => {
 
   const onSubmit = async (data: SignUpForm) => {
     try {
-      await signUp(data);
-      console.log('회원가입 성공')
+      const user = await signUp(data);
+      console.log("회원가입 성공");
+      signIn({userId: user?.id ?? "", nickname: data.nickname})
+      navigate("/");
     } catch (error) {
       console.error(error);
+      alert("회원가입 실패");
     }
   };
 

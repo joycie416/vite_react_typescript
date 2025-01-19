@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "../../api/supabase-auth-api";
+import useAuthStore from "../../store/authStore";
 
 const schema = z.object({
   email: z.string().email({ message: "이메일 형식으로 입력해주세요" }),
@@ -20,6 +21,9 @@ const defaultValues = {
 type SignInForm = z.infer<typeof schema>;
 
 const SignIn = () => {
+  const navigate = useNavigate();
+  const { signIn: StoreSignIn } = useAuthStore((state) => state);
+
   const {
     register,
     handleSubmit,
@@ -32,10 +36,16 @@ const SignIn = () => {
 
   const onSubmit = async (data: SignInForm) => {
     try {
-      await signIn(data);
+      const user = await signIn(data);
       console.log("로그인 성공");
+      StoreSignIn({
+        userId: user?.id ?? "",
+        nickname: user?.user_metadata.nickname ?? "",
+      });
+      navigate("/");
     } catch (error) {
       console.error(error);
+      alert("로그인 실패");
     }
   };
 

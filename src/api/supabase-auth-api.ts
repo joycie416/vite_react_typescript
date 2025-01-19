@@ -1,14 +1,10 @@
-import { createClient } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
 import { SignInData, SignUpData } from "../types/auth";
+import supabase from "./supabaseClient";
 
-const supabaseUrl:string = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey:string = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-export const signUp = async (userData: SignUpData) => {
+export const signUp = async (userData: SignUpData): Promise<User|null> => {
   const { email, password, nickname } = userData;
-  const { error } = await supabase.auth.signUp({
+  const { data: {user}, error } = await supabase.auth.signUp({
     email,
     password,
     options: { data: { email, nickname } },
@@ -17,14 +13,16 @@ export const signUp = async (userData: SignUpData) => {
     console.log(error)
     throw new Error("회원가입에 실패하였습니다.");
   }
+  return user;
 };
 
-export const signIn = async (userData: SignInData) => {
-  const { error } = await supabase.auth.signInWithPassword(userData);
+export const signIn = async (userData: SignInData): Promise<User|null> => {
+  const { data: {user}, error } = await supabase.auth.signInWithPassword(userData);
   if (error) {
     console.log(error)
     throw new Error("로그인에 실패하였습니다.");
   }
+  return user;
 };
 
 export const signOut = async () => {
@@ -40,10 +38,11 @@ export const getUser = async () => {
     error,
   } = await supabase.auth.getUser();
   if (error || !user) {
-    throw new Error("사용자 정보를 가져오지 못했습니다.");
+    return null
   }
 
-  return { userId: user.id, nickname: user.user_metadata.nickname };
+
+  return { userId: user.id, nickname: user.user_metadata.nickname as string };
 };
 
 export const updateUser = async ({
