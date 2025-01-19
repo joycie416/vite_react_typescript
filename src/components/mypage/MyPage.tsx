@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import useAuthStore from "../../store/authStore";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -20,7 +19,6 @@ const defaultValues = {
 const MyPage = () => {
   const { user, editUser } = useAuthStore((state) => state);
   const { mutate: updateUser } = useUpdateUserMutation();
-  const inputRef = useRef<HTMLInputElement>(null);
 
   console.log("user :", user);
 
