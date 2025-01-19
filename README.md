@@ -1,50 +1,37 @@
-# React + TypeScript + Vite
+#한달 인턴 지원 과제
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### 배포링크
 
-Currently, two official plugins are available:
+https://vite-react-typescript-one.vercel.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 구현 기능
 
-## Expanding the ESLint configuration
+1. 회원가입/로그인
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+   - 제공된 서버가 작동하지 않아 supabase auth를 사용해 구현.
+   - supabase에 trigger를 추가해 회원가입하면 자동으로 users 테이블에 사용자 정보 추가되도록 함.
+   - 회원가입/로그인 후 Home으로 이동.
 
-- Configure the top-level `parserOptions` property like this:
+2. Todo 리스트 구현
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+   - Todo 추가, 수정, 삭제 기능 구현.
+   - 사용자 id에 따라 등록한 Todo 리스트 보여줌.
+   - 낙관적 업데이트 적용.
+   - 로그인 정보가 없을 시 Todo 추가 불가 및 로그인 페이지로 이동.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+3. 프로필 수정
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+   - 닉네임 수정 가능.
+   - 낙관적 업데이트 적용.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+4. Private Route 구현
+
+   - 로그인 정보가 없을 시 마이페이지 접근 불가
+
+### 블로그 과제
+
+1. accessToken&refreshToken
+
+2. 유닛 테스트란?
+
+3. 에러 로

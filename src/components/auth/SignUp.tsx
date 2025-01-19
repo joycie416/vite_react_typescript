@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signUp } from "../../api/supabase-auth-api";
 import useAuthStore from "../../store/authStore";
+import * as Sentry from "@sentry/react";
 
 const schema = z.object({
   nickname: z
@@ -47,6 +48,7 @@ const SignUp = () => {
       navigate("/");
     } catch (error) {
       console.error(error);
+      Sentry.captureException(error)
       alert("회원가입 실패");
     }
   };

@@ -4,6 +4,7 @@ import useAuthStore from "../store/authStore";
 import supabase from "../api/supabaseClient";
 import { signOut } from "../api/supabase-auth-api";
 import { useQueryClient } from "@tanstack/react-query";
+import * as Sentry from "@sentry/react";
 
 const NavBar = () => {
   const queryClient = useQueryClient();
@@ -33,6 +34,7 @@ const NavBar = () => {
       storeSignOut();
     } catch (error) {
       console.error(error);
+      Sentry.captureException(error)
       alert("로그아웃 실패");
     }
   };
